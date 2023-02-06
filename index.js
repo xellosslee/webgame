@@ -1,3 +1,5 @@
+import { fire1 } from './spells.js'
+
 // Create PIXI apllicaion (OpenGL)
 const app = new PIXI.Application({
     resizeTo: window
@@ -17,12 +19,12 @@ stage.addChild(graphics)
 
 // set a fill and line style
 // 그려야할 마법의 모양을 배경으로 그려준다 (튜토리얼 & 디버깅에 사용)
-preShapeMagic.lineStyle(fire1.difficult*2, 0xFF0000, 0.5)
-for(let i = 0 ; i < fire1.shape.length; i+=2) {
-    if(i == 0)
-        preShapeMagic.moveTo(fire1.shape[i], fire1.shape[i+1])
+preShapeMagic.lineStyle(fire1.difficult * 2, 0xFF0000, 0.5)
+for (let i = 0; i < fire1.shape.length; i += 2) {
+    if (i == 0)
+        preShapeMagic.moveTo(fire1.shape[i], fire1.shape[i + 1])
     else
-        preShapeMagic.lineTo(fire1.shape[i], fire1.shape[i+1])
+        preShapeMagic.lineTo(fire1.shape[i], fire1.shape[i + 1])
 }
 preShapeMagic.closePath()
 preShapeMagic.endFill()
@@ -44,11 +46,11 @@ var clickPosition = undefined
 function pointerDown(event) {
     console.log(`pointerDown x : ${event.data.global.x} y : ${event.data.global.y}`)
     dragging = true
-    if(clickPosition === undefined) {
+    if (clickPosition === undefined) {
         // set a line style
         graphics.lineStyle(1, 0xFFFFFF, 1, 0, true)
         graphics.moveTo(event.data.global.x, event.data.global.y)
-        clickPosition = {x:event.data.global.x, y:event.data.global.y}
+        clickPosition = { x: event.data.global.x, y: event.data.global.y }
     }
     pointerMove(event)
 }
@@ -58,7 +60,7 @@ function pointerUp(event) {
     clickPosition = undefined
     //graphics.geometry.graphicsData
     let percent = calcPercentMatch(fire1, graphics.geometry.graphicsData)
-    if(percent == -1)
+    if (percent == -1)
         alert(`Too short`)
     else
         alert(`${percent}% match`)
@@ -68,16 +70,16 @@ function pointerUp(event) {
 
 function pointerMove(event) {
     // console.log(`clickPosition x ${clickPosition.x} y ${clickPosition.y} pointerMove x ${event.data.global.x} y ${event.data.global.y}`)
-    if (dragging && 
-        (   clickPosition.x <= event.data.global.x - drawInterval ||
+    if (dragging &&
+        (clickPosition.x <= event.data.global.x - drawInterval ||
             clickPosition.x >= event.data.global.x + drawInterval ||
             clickPosition.y <= event.data.global.y - drawInterval ||
-            clickPosition.y >= event.data.global.y + drawInterval 
+            clickPosition.y >= event.data.global.y + drawInterval
         )) {
         graphics.lineStyle(1, Math.random() * 0xFFFFFF, 1, 0, true)
         graphics.moveTo(clickPosition.x, clickPosition.y)
         graphics.lineTo(event.data.global.x, event.data.global.y)
-        clickPosition = {x:event.data.global.x, y:event.data.global.y}
+        clickPosition = { x: event.data.global.x, y: event.data.global.y }
     }
 }
 function setup(loader, resources) {
@@ -90,32 +92,32 @@ function calcPercentMatch(spell, drawLines) {
     let match = 0
     let miss = 0
 
-    for(let j = 0; j < drawLines.length; j++) {
-        let bestResult = {match:0,miss:5}
-        for(let i = 0; i < spell.shape.length;i+=2) {
-            
-            let boundsSpell = rect(spell.shape[i] - spell.difficult, spell.shape[i+1] - spell.difficult,
-                spell.shape[i+2] + spell.difficult, spell.shape[i+3] + spell.difficult)
+    for (let j = 0; j < drawLines.length; j++) {
+        let bestResult = { match: 0, miss: 5 }
+        for (let i = 0; i < spell.shape.length; i += 2) {
+
+            let boundsSpell = rect(spell.shape[i] - spell.difficult, spell.shape[i + 1] - spell.difficult,
+                spell.shape[i + 2] + spell.difficult, spell.shape[i + 3] + spell.difficult)
 
             let boundsDraw = rect(drawLines[j].points[0], drawLines[j].points[1], drawLines[j].points[2], drawLines[j].points[3])
             let result = calcBounds(boundsSpell, boundsDraw)
-            if(result.match == calcInterval) {
+            if (result.match == calcInterval) {
                 bestResult = result
                 break
             } else if (bestResult.match < result.match) {
-                bestResult = {match:result.match,miss:result.miss}
-            } else if(result.miss == calcInterval) {
+                bestResult = { match: result.match, miss: result.miss }
+            } else if (result.miss == calcInterval) {
                 // debugger
             }
         }
         match += bestResult.match
         miss += bestResult.miss
     }
-    return (match / (match+miss)) * 100
+    return (match / (match + miss)) * 100
 }
 
-function rect(minX,minY,maxX,maxY) {
-    return {minX:minX,minY:minY,maxX:maxX,maxY:maxY}
+function rect(minX, minY, maxX, maxY) {
+    return { minX: minX, minY: minY, maxX: maxX, maxY: maxY }
 }
 /* Example
 50 50 250 50 // spell 객체의 예시 
@@ -146,9 +148,9 @@ function calcBounds(rectBase, rectCheck) {
     let intervalX = rectCheck.maxX - rectCheck.minX
     let intervalY = rectCheck.maxY - rectCheck.minY
 
-    let result = {match: 0, miss: 0}
-    for(let i = 0 ; i < calcInterval ; i++) {
-        if(rectBase.minX <= x && rectBase.maxX >= x && rectBase.minY <= y && rectBase.maxY >= y) {
+    let result = { match: 0, miss: 0 }
+    for (let i = 0; i < calcInterval; i++) {
+        if (rectBase.minX <= x && rectBase.maxX >= x && rectBase.minY <= y && rectBase.maxY >= y) {
             result.match++
         } else {
             result.miss++
@@ -157,8 +159,8 @@ function calcBounds(rectBase, rectCheck) {
         //     x += Math.round(intervalX / calcInterval)
         //     y += Math.round(intervalY / calcInterval)
         // } else {
-            x += (intervalX / calcInterval)
-            y += (intervalY / calcInterval)
+        x += (intervalX / calcInterval)
+        y += (intervalY / calcInterval)
         // }
     }
 
